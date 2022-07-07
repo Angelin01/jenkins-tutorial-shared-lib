@@ -50,8 +50,7 @@ explanation.
 
 | Parameter      | Default                          | Description                                                                                                                                                     |
 |----------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `registry`     | -                                | The name of the Docker Image registry to use. Probably an ECR name.                                                                                             |
-| `imageName`    | -                                | The name of the image to be built, without the tag or registry.                                                                                                 |
+| `imageName`    | -                                | The name of the image to be built, including a registry if a custom one is used, but **without the tag**.                                                       |
 | `imageTag`     | -                                | The tag(s) to be used on the Docker image. Accepts either a string or a list of strings, if you wish to push multiple tags (like the commit but also `latest`). |
 | `container`    | `'kaniko'`                       | The name of the Kaniko container.                                                                                                                               |
 | `shell`        | `'/busybox/sh'`                  | Path of the shell inside the Kaniko container.                                                                                                                  |
@@ -74,7 +73,6 @@ stage('Kaniko Build') {
     steps {
         script {
             kaniko.buildNoPush(
-                    registry: '127793779807.dkr.ecr.us-east-1.amazonaws.com',
                     imageName: 'our-application',
                     imageTag: '1.2.3-alpine',
                     extraArgs: '--build-arg NPM_TOKEN=${NPM_TOKEN}'
@@ -113,7 +111,6 @@ pipeline {
 
 def kanikoArgs() {
     return [
-            registry: '127793779807.dkr.ecr.us-east-1.amazonaws.com',
             imageName: 'our-application',
             imageTag: '1.2.3-alpine',
             dockerfile: "${env.WORKSPACE}/docker/Dockerfile",
@@ -129,7 +126,6 @@ stage('Kaniko Build') {
     steps {
         script {
             kaniko.buildAndPush(
-                    registry: '127793779807.dkr.ecr.us-east-1.amazonaws.com',
                     imageName: 'our-application',
                     imageTag: [env.GIT_COMMIT, 'latest']
             )

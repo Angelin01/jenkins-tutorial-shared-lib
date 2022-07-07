@@ -17,7 +17,7 @@ def buildNoPush(Map args) {
 }
 
 private def build(Map args) {
-    def destinations = destinationsFromArgs(args.registry, args.imageName, args.imageTag)
+    def destinations = destinationsFromArgs(args.imageName, args.imageTag)
     def containerName = args?.container ?: 'kaniko'
     def shell = args?.shell ?: '/busybox/sh'
     def dockerfile = args?.dockerfile ?: "${env.WORKSPACE}/Dockerfile"
@@ -34,10 +34,10 @@ private def build(Map args) {
     }
 }
 
-private String destinationsFromArgs(String registry, String imageName, def imageTag) {
+private String destinationsFromArgs(String imageName, def imageTag) {
     if (!(imageTag instanceof List)) {
         imageTag = [imageTag]
     }
 
-    return imageTag.collect { tag -> """--destination="${registry}/${imageName}:${tag}\"""" }.join(' ')
+    return imageTag.collect { tag -> """--destination="${imageName}:${tag}\"""" }.join(' ')
 }
